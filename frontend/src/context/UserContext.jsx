@@ -7,11 +7,30 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const isValidSessionUser = (candidate) => {
+        return Boolean(
+            candidate &&
+            typeof candidate === 'object' &&
+            (candidate._id || candidate.id) &&
+            candidate.token &&
+            candidate.name
+        );
+    };
+
     useEffect(() => {
-        // Check local storage or similar for persisted session
-        const storedUser = localStorage.getItem('dpr_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        // Restore only a valid authenticated session from local storage.
+        const storedUserRaw = localStorage.getItem('dpr_user');
+        if (storedUserRaw) {
+            try {
+                const parsed = JSON.parse(storedUserRaw);
+                if (isValidSessionUser(parsed)) {
+                    setUser(parsed);
+                } else {
+                    localStorage.removeItem('dpr_user');
+                }
+            } catch (error) {
+                localStorage.removeItem('dpr_user');
+            }
         }
         setLoading(false);
     }, []);

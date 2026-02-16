@@ -6,6 +6,7 @@ import Button from '../ui/Button';
 const Navbar = () => {
     const { user, logout } = useUser();
     const navigate = useNavigate();
+    const isLoggedIn = Boolean(user && user.token && (user._id || user.id));
 
     const handleLogout = () => {
         logout();
@@ -59,7 +60,7 @@ const Navbar = () => {
                 <div style={linkGroupStyles}>
                     <Link to="/about" style={navLinkStyles}>About</Link>
 
-                    {user ? (
+                    {isLoggedIn ? (
                         <>
                             <Link to="/dashboard" style={navLinkStyles}>Dashboard</Link>
                             <Link to="/progress" style={navLinkStyles}>My Progress</Link>

@@ -796,6 +796,52 @@ const seedData = async () => {
         },
     ];
 
+    // Ensure each skill has at least 3 resource options.
+    const resourceCountBySkill = resourcesToInsert.reduce((acc, item) => {
+        acc[item.skill] = (acc[item.skill] || 0) + 1;
+        return acc;
+    }, {});
+
+    for (const skillDoc of skillDocs) {
+        const skillKey = `${skillDoc.domain}::${skillDoc.name}`;
+        const existingCount = resourceCountBySkill[skillKey] || 0;
+        if (existingCount >= 3) continue;
+
+        const searchQuery = encodeURIComponent(`${skillDoc.name} ${skillDoc.domain}`);
+        const generatedCandidates = [
+            {
+                skill: skillKey,
+                title: `${skillDoc.name} - Documentation Reference`,
+                type: 'documentation',
+                url: `https://www.google.com/search?q=${encodeURIComponent(`${skillDoc.name} official documentation`)}`,
+                difficulty: skillDoc.level,
+                rating: 4.3,
+            },
+            {
+                skill: skillKey,
+                title: `${skillDoc.name} - Video Walkthrough`,
+                type: 'video',
+                url: `https://www.youtube.com/results?search_query=${searchQuery}`,
+                difficulty: skillDoc.level,
+                rating: 4.2,
+            },
+            {
+                skill: skillKey,
+                title: `${skillDoc.name} - Hands-on Tutorial`,
+                type: 'tutorial',
+                url: `https://www.freecodecamp.org/news/search?query=${encodeURIComponent(skillDoc.name)}`,
+                difficulty: skillDoc.level,
+                rating: 4.4,
+            },
+        ];
+
+        for (const candidate of generatedCandidates) {
+            if ((resourceCountBySkill[skillKey] || 0) >= 3) break;
+            resourcesToInsert.push(candidate);
+            resourceCountBySkill[skillKey] = (resourceCountBySkill[skillKey] || 0) + 1;
+        }
+    }
+
     const resourcesDocs = resourcesToInsert
         .map((r) => {
             const skillDoc = skillByKey[r.skill];

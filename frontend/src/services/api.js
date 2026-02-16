@@ -45,6 +45,27 @@ export const submitLearningPreferences = async (data) => {
   const userId = getUserId();
   if (!userId) throw new Error('User not logged in');
 
+  const normalizeSkillLevel = (level) => {
+    const map = {
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+    };
+    return map[String(level || '').toLowerCase()] || undefined;
+  };
+
+  const normalizeLearningStyle = (style) => {
+    const map = {
+      video: 'video',
+      docs: 'documentation',
+      documentation: 'documentation',
+      project: 'tutorial',
+      tutorial: 'tutorial',
+      mixed: 'mixed',
+    };
+    return map[String(style || '').toLowerCase()] || undefined;
+  };
+
   const res = await fetch(`${API_BASE}/roadmap/generate`, {
     method: 'POST',
     headers: getHeaders(),
@@ -52,6 +73,10 @@ export const submitLearningPreferences = async (data) => {
       userId,
       // Map selected technology/domain from frontend to backend field
       domain: data.techId,
+      // Send preferences so roadmap generation can vary by selected level/style
+      skillLevel: normalizeSkillLevel(data.skillLevel),
+      learningStyle: normalizeLearningStyle(data.learningType),
+      timeAvailable: data.timeAvailable,
     }),
   });
 
@@ -93,7 +118,9 @@ export const getRoadmap = async (techId) => {
 
 // 5️⃣ Get Resources for a Skill (Module Detail)
 export const getModuleResources = async (skillId) => {
-  const res = await fetch(`${API_BASE}/roadmap/skill/${skillId}`, {
+  const userId = getUserId();
+  const qs = userId ? `?userId=${encodeURIComponent(userId)}` : '';
+  const res = await fetch(`${API_BASE}/roadmap/skill/${skillId}${qs}`, {
     headers: getHeaders(),
   });
   const json = await res.json();

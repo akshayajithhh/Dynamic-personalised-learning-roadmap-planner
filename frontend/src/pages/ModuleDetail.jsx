@@ -70,6 +70,20 @@ const ModuleDetail = () => {
                     </div>
                 </div>
 
+                {module.studyTips && (
+                    <div className="card" style={{ marginBottom: '2rem' }}>
+                        <h3 style={{ marginBottom: '0.5rem' }}>Tips and Tricks for Your Level</h3>
+                        <p style={{ color: 'var(--text-light)', marginBottom: '0.75rem' }}>
+                            Level: <strong>{module.studyTips.level}</strong> | Style: <strong>{module.studyTips.learningStyle}</strong> | Cadence: <strong>{module.studyTips.recommendedCadence}</strong>
+                        </p>
+                        <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                            {(module.studyTips.tips || []).map((tip, idx) => (
+                                <li key={idx} style={{ marginBottom: '0.5rem', lineHeight: '1.5' }}>{tip}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 <h3 style={{ marginBottom: '1rem' }}>Learning Resources</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
                     {module.resources && module.resources.map((resource, idx) => (
