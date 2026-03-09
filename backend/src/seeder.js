@@ -69,6 +69,54 @@ const seedData = async () => {
             icon: '📱',
             technologies: ['React Native', 'Flutter', 'Android', 'iOS'],
         },
+        {
+            name: 'AI & ML Engineering',
+            description: 'Build and ship machine learning and LLM-powered applications.',
+            icon: 'AI',
+            technologies: ['Python', 'PyTorch', 'TensorFlow', 'MLOps', 'LLMs'],
+        },
+        {
+            name: 'Data Engineering',
+            description: 'Design reliable data pipelines, warehouses, and streaming platforms.',
+            icon: 'DE',
+            technologies: ['SQL', 'Spark', 'Airflow', 'Kafka', 'dbt'],
+        },
+        {
+            name: 'UI/UX Design',
+            description: 'Create usable interfaces through design systems, research, and prototyping.',
+            icon: 'UX',
+            technologies: ['Figma', 'Wireframing', 'Design Systems', 'Accessibility', 'User Research'],
+        },
+        {
+            name: 'QA & Test Automation',
+            description: 'Ensure software quality using manual testing and automated test suites.',
+            icon: 'QA',
+            technologies: ['Testing Fundamentals', 'Playwright', 'Cypress', 'Selenium', 'API Testing'],
+        },
+        {
+            name: 'Game Development',
+            description: 'Build interactive games with engines, gameplay systems, and asset pipelines.',
+            icon: 'GM',
+            technologies: ['Unity', 'Unreal Engine', 'C#', 'Physics', 'Game Design'],
+        },
+        {
+            name: 'Blockchain & Web3',
+            description: 'Develop decentralized applications, smart contracts, and on-chain integrations.',
+            icon: 'W3',
+            technologies: ['Solidity', 'EVM', 'Smart Contracts', 'Web3.js', 'Token Standards'],
+        },
+        {
+            name: 'Product Management',
+            description: 'Plan and deliver tech products using strategy, discovery, and analytics.',
+            icon: 'PM',
+            technologies: ['Product Strategy', 'User Stories', 'Roadmapping', 'Metrics', 'Experimentation'],
+        },
+        {
+            name: 'Embedded Systems & IoT',
+            description: 'Build firmware and connected systems for sensors, devices, and edge computing.',
+            icon: 'IoT',
+            technologies: ['C/C++', 'Microcontrollers', 'RTOS', 'MQTT', 'Sensor Integration'],
+        },
     ];
 
     const domainDocs = await Domain.insertMany(domainsData);
@@ -221,6 +269,206 @@ const seedData = async () => {
             name: 'State Management & APIs',
             description: 'Manage app state and integrate with backend APIs.',
             order: 3,
+        },
+        // AI & ML Engineering
+        {
+            domain: 'AI & ML Engineering',
+            name: 'ML Foundations & Tooling',
+            description: 'Set up ML environments, experiment tracking, and model development workflows.',
+            order: 1,
+        },
+        {
+            domain: 'AI & ML Engineering',
+            name: 'Deep Learning Fundamentals',
+            description: 'Train neural networks and optimize model performance.',
+            order: 2,
+        },
+        {
+            domain: 'AI & ML Engineering',
+            name: 'LLM Application Development',
+            description: 'Build LLM-powered apps with prompting, retrieval, and evaluation.',
+            order: 3,
+        },
+        {
+            domain: 'AI & ML Engineering',
+            name: 'MLOps & Model Deployment',
+            description: 'Deploy, monitor, and maintain ML systems in production.',
+            order: 4,
+        },
+        // Data Engineering
+        {
+            domain: 'Data Engineering',
+            name: 'Data Modeling & SQL',
+            description: 'Model analytical data and write robust SQL transformations.',
+            order: 1,
+        },
+        {
+            domain: 'Data Engineering',
+            name: 'Batch Pipelines',
+            description: 'Build scheduled ETL and ELT workflows using orchestration tools.',
+            order: 2,
+        },
+        {
+            domain: 'Data Engineering',
+            name: 'Streaming Data Systems',
+            description: 'Process real-time event streams with scalable architectures.',
+            order: 3,
+        },
+        {
+            domain: 'Data Engineering',
+            name: 'Data Platform Reliability',
+            description: 'Implement observability, quality checks, and governance for data systems.',
+            order: 4,
+        },
+        // UI/UX Design
+        {
+            domain: 'UI/UX Design',
+            name: 'UX Research & Problem Framing',
+            description: 'Run user research, synthesize insights, and define product problems.',
+            order: 1,
+        },
+        {
+            domain: 'UI/UX Design',
+            name: 'Wireframing & Interaction Design',
+            description: 'Create user flows, wireframes, and interaction patterns.',
+            order: 2,
+        },
+        {
+            domain: 'UI/UX Design',
+            name: 'Visual Design Systems',
+            description: 'Design scalable visual systems with components and style tokens.',
+            order: 3,
+        },
+        {
+            domain: 'UI/UX Design',
+            name: 'Usability Testing & Iteration',
+            description: 'Validate design decisions and improve UX through testing.',
+            order: 4,
+        },
+        // QA & Test Automation
+        {
+            domain: 'QA & Test Automation',
+            name: 'Testing Fundamentals',
+            description: 'Learn test planning, test case design, and defect lifecycle basics.',
+            order: 1,
+        },
+        {
+            domain: 'QA & Test Automation',
+            name: 'API & Integration Testing',
+            description: 'Validate service behavior with API and integration test strategies.',
+            order: 2,
+        },
+        {
+            domain: 'QA & Test Automation',
+            name: 'UI Automation',
+            description: 'Build maintainable browser automation suites for regression coverage.',
+            order: 3,
+        },
+        {
+            domain: 'QA & Test Automation',
+            name: 'Test Strategy & CI Quality Gates',
+            description: 'Integrate testing into CI/CD with effective quality controls.',
+            order: 4,
+        },
+        // Game Development
+        {
+            domain: 'Game Development',
+            name: 'Game Programming Basics',
+            description: 'Learn engine fundamentals, scene setup, and game loops.',
+            order: 1,
+        },
+        {
+            domain: 'Game Development',
+            name: 'Gameplay Systems',
+            description: 'Implement player controls, AI behavior, and game mechanics.',
+            order: 2,
+        },
+        {
+            domain: 'Game Development',
+            name: 'Graphics, Physics & Optimization',
+            description: 'Handle rendering, physics interactions, and performance tuning.',
+            order: 3,
+        },
+        {
+            domain: 'Game Development',
+            name: 'Publishing & Live Operations',
+            description: 'Prepare builds, deploy releases, and manage post-launch updates.',
+            order: 4,
+        },
+        // Blockchain & Web3
+        {
+            domain: 'Blockchain & Web3',
+            name: 'Blockchain Fundamentals',
+            description: 'Understand consensus, wallets, transactions, and token economics.',
+            order: 1,
+        },
+        {
+            domain: 'Blockchain & Web3',
+            name: 'Smart Contract Development',
+            description: 'Write, test, and deploy secure smart contracts.',
+            order: 2,
+        },
+        {
+            domain: 'Blockchain & Web3',
+            name: 'dApp Frontend Integration',
+            description: 'Connect web clients to wallets and on-chain contracts.',
+            order: 3,
+        },
+        {
+            domain: 'Blockchain & Web3',
+            name: 'Web3 Security & Auditing',
+            description: 'Identify and mitigate contract vulnerabilities and protocol risks.',
+            order: 4,
+        },
+        // Product Management
+        {
+            domain: 'Product Management',
+            name: 'Product Discovery',
+            description: 'Define user problems, hypotheses, and MVP scope.',
+            order: 1,
+        },
+        {
+            domain: 'Product Management',
+            name: 'Roadmapping & Prioritization',
+            description: 'Prioritize initiatives using value, effort, and strategic alignment.',
+            order: 2,
+        },
+        {
+            domain: 'Product Management',
+            name: 'Delivery & Cross-functional Execution',
+            description: 'Coordinate teams to ship product increments effectively.',
+            order: 3,
+        },
+        {
+            domain: 'Product Management',
+            name: 'Product Analytics & Growth',
+            description: 'Use metrics and experiments to improve activation, retention, and revenue.',
+            order: 4,
+        },
+        // Embedded Systems & IoT
+        {
+            domain: 'Embedded Systems & IoT',
+            name: 'Embedded C/C++ Foundations',
+            description: 'Program low-level firmware for constrained devices.',
+            order: 1,
+        },
+        {
+            domain: 'Embedded Systems & IoT',
+            name: 'Sensors, Buses & Device Integration',
+            description: 'Integrate peripherals using protocols like I2C, SPI, and UART.',
+            order: 2,
+        },
+        {
+            domain: 'Embedded Systems & IoT',
+            name: 'Real-Time Systems',
+            description: 'Build deterministic firmware with scheduling and interrupt handling.',
+            order: 3,
+        },
+        {
+            domain: 'Embedded Systems & IoT',
+            name: 'IoT Connectivity & Edge Deployment',
+            description: 'Connect devices securely and deploy edge workloads.',
+            order: 4,
         },
     ];
 
@@ -591,6 +839,46 @@ const seedData = async () => {
         },
     ];
 
+    // Auto-expand dataset: add beginner-to-advanced practical skills per module so every roadmap
+    // has deeper progression and more realistic volume for project demos.
+    const generatedSkills = modulesDefinitions.flatMap((moduleDef) => {
+        const foundationSkillName = `${moduleDef.name} Foundations`;
+        const practiceSkillName = `${moduleDef.name} Practice Lab`;
+        const projectSkillName = `${moduleDef.name} Applied Project`;
+
+        return [
+            {
+                domain: moduleDef.domain,
+                module: moduleDef.name,
+                name: foundationSkillName,
+                level: 'Beginner',
+                estimatedHours: 4,
+                description: `Build foundation-level understanding of ${moduleDef.name.toLowerCase()} concepts and terminology.`,
+                prerequisites: [],
+            },
+            {
+                domain: moduleDef.domain,
+                module: moduleDef.name,
+                name: practiceSkillName,
+                level: 'Intermediate',
+                estimatedHours: 6,
+                description: `Practice ${moduleDef.name.toLowerCase()} using guided exercises and checkpoints.`,
+                prerequisites: [foundationSkillName],
+            },
+            {
+                domain: moduleDef.domain,
+                module: moduleDef.name,
+                name: projectSkillName,
+                level: 'Advanced',
+                estimatedHours: 8,
+                description: `Build an applied project for ${moduleDef.name.toLowerCase()} with production-style constraints.`,
+                prerequisites: [practiceSkillName],
+            },
+        ];
+    });
+
+    skillsDefinitions.push(...generatedSkills);
+
     // Insert skills without prerequisites first, so we can resolve IDs after
     const skillsToInsert = skillsDefinitions.map((s) => {
         const moduleDoc = moduleByKey[`${s.domain}::${s.module}`];
@@ -796,7 +1084,7 @@ const seedData = async () => {
         },
     ];
 
-    // Ensure each skill has at least 3 resource options.
+    // Ensure each skill has at least 4 resource options.
     const resourceCountBySkill = resourcesToInsert.reduce((acc, item) => {
         acc[item.skill] = (acc[item.skill] || 0) + 1;
         return acc;
@@ -805,7 +1093,7 @@ const seedData = async () => {
     for (const skillDoc of skillDocs) {
         const skillKey = `${skillDoc.domain}::${skillDoc.name}`;
         const existingCount = resourceCountBySkill[skillKey] || 0;
-        if (existingCount >= 3) continue;
+        if (existingCount >= 4) continue;
 
         const searchQuery = encodeURIComponent(`${skillDoc.name} ${skillDoc.domain}`);
         const generatedCandidates = [
@@ -836,7 +1124,7 @@ const seedData = async () => {
         ];
 
         for (const candidate of generatedCandidates) {
-            if ((resourceCountBySkill[skillKey] || 0) >= 3) break;
+            if ((resourceCountBySkill[skillKey] || 0) >= 4) break;
             resourcesToInsert.push(candidate);
             resourceCountBySkill[skillKey] = (resourceCountBySkill[skillKey] || 0) + 1;
         }

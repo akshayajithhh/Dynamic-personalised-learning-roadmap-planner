@@ -7,6 +7,7 @@ const WeeklyPlan = () => {
             <div className="container">
                 <h2 className="title">Weekly Plan</h2>
                 <div className="card">
+                    '
                     <p>A detailed weekly schedule view will appear here.</p>
                 </div>
             </div>

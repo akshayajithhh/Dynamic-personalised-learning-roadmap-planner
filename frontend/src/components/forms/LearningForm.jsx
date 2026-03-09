@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Button from '../ui/Button';
 
-const LearningForm = ({ onSubmit, loading }) => {
+const LearningForm = ({ onSubmit, loading, techOptions = [], initialTechId = '' }) => {
+    const defaultTechId = useMemo(() => {
+        if (initialTechId) return initialTechId;
+        return techOptions[0]?._id || techOptions[0]?.name || '';
+    }, [initialTechId, techOptions]);
+
     const [preferences, setPreferences] = useState({
+        techId: defaultTechId,
         skillLevel: 'beginner',
         timeAvailable: '30min',
         learningType: 'video',
     });
+
+    useEffect(() => {
+        if (!preferences.techId && defaultTechId) {
+            setPreferences((prev) => ({ ...prev, techId: defaultTechId }));
+        }
+    }, [defaultTechId, preferences.techId]);
 
     const handleChange = (e) => {
         setPreferences({ ...preferences, [e.target.name]: e.target.value });
@@ -17,52 +29,49 @@ const LearningForm = ({ onSubmit, loading }) => {
         onSubmit(preferences);
     };
 
-    const formGroupStyle = {
-        marginBottom: '1.5rem',
-    };
-
-    const labelStyle = {
-        display: 'block',
-        marginBottom: '0.75rem',
-        fontWeight: '600',
-        color: 'var(--secondary-black)',
-    };
-
-    const selectStyle = {
-        width: '100%',
-        padding: '0.75rem',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid #d1d5db',
-        fontSize: '1rem',
-        backgroundColor: 'var(--surface-color)',
-        cursor: 'pointer',
-    };
-
     return (
         <form onSubmit={handleSubmit}>
-            <div style={formGroupStyle}>
-                <label style={labelStyle} htmlFor="skillLevel">Current Skill Level</label>
+            <div className="form-group">
+                <label className="form-label" htmlFor="techId">Domain / Career Goal</label>
+                <select
+                    id="techId"
+                    name="techId"
+                    value={preferences.techId}
+                    onChange={handleChange}
+                    className="form-control"
+                    required
+                >
+                    {techOptions.map((option) => (
+                        <option key={option._id || option.name} value={option._id || option.name}>
+                            {option.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label className="form-label" htmlFor="skillLevel">Current Skill Level</label>
                 <select
                     id="skillLevel"
                     name="skillLevel"
                     value={preferences.skillLevel}
                     onChange={handleChange}
-                    style={selectStyle}
+                    className="form-control"
                 >
-                    <option value="beginner">Beginner (New to this)</option>
-                    <option value="intermediate">Intermediate (Know the basics)</option>
-                    <option value="advanced">Advanced (Looking for deep dives)</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
                 </select>
             </div>
 
-            <div style={formGroupStyle}>
-                <label style={labelStyle} htmlFor="timeAvailable">Daily Study Time</label>
+            <div className="form-group">
+                <label className="form-label" htmlFor="timeAvailable">Available Learning Time</label>
                 <select
                     id="timeAvailable"
                     name="timeAvailable"
                     value={preferences.timeAvailable}
                     onChange={handleChange}
-                    style={selectStyle}
+                    className="form-control"
                 >
                     <option value="15min">15 Minutes</option>
                     <option value="30min">30 Minutes</option>
@@ -71,14 +80,14 @@ const LearningForm = ({ onSubmit, loading }) => {
                 </select>
             </div>
 
-            <div style={formGroupStyle}>
-                <label style={labelStyle} htmlFor="learningType">Preferred Learning Style</label>
+            <div className="form-group">
+                <label className="form-label" htmlFor="learningType">Preferred Learning Style</label>
                 <select
                     id="learningType"
                     name="learningType"
                     value={preferences.learningType}
                     onChange={handleChange}
-                    style={selectStyle}
+                    className="form-control"
                 >
                     <option value="video">Video Tutorials</option>
                     <option value="docs">Documentation & Reading</option>

@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import domainRoutes from './routes/domainRoutes.js';
 import roadmapRoutes from './routes/roadmapRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
+import agentRoutes from './routes/agentRoutes.js';
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/domains', domainRoutes);
 app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/agent', agentRoutes);
 
 // Health check
 app.get('/', (req, res) => {

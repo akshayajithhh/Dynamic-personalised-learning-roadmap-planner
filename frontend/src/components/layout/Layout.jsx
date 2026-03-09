@@ -1,25 +1,18 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { useUser } from '../../context/UserContext';
+import AIAgentPanel from '../agent/AIAgentPanel';
 
 const Layout = ({ children }) => {
-    const layoutStyles = {
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-    };
-
-    const mainStyles = {
-        flex: 1,
-        padding: '2rem 0',
-    };
+    const { user } = useUser();
+    const isLoggedIn = Boolean(user && user.token && (user._id || user.id));
 
     return (
-        <div style={layoutStyles}>
+        <div className="app-shell">
             <Navbar />
-            <main style={mainStyles}>
-                {children}
-            </main>
+            <main className={`app-main${isLoggedIn ? ' with-agent' : ''}`}>{children}</main>
+            {isLoggedIn && <AIAgentPanel />}
             <Footer />
         </div>
     );

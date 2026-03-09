@@ -22,6 +22,14 @@ export const router = createBrowserRouter([
         element: <Home />,
     },
     {
+        path: '/generate-roadmap',
+        element: <LearningFormPage />,
+    },
+    {
+        path: '/my-roadmaps',
+        element: <Roadmap />,
+    },
+    {
         path: '/login',
         element: <Login />,
     },

@@ -113,6 +113,10 @@ export const getRoadmap = async (techId) => {
     status: item.status,
     type: item.resourceId?.type,
     description: item.skillId?.description,
+    estimatedHours: item.skillId?.estimatedHours,
+    resourceTitle: item.resourceId?.title,
+    resourceUrl: item.resourceId?.url,
+    difficulty: item.resourceId?.difficulty || item.skillId?.level,
   }));
 };
 
@@ -233,6 +237,25 @@ export const createDomain = async ({ name, description, icon, technologies }) =>
   const json = await res.json();
   if (!res.ok || !json.success) {
     throw new Error(json.message || 'Failed to create domain');
+  }
+
+  return json.data;
+};
+
+// Agent: chat with coding assistant (API-key powered on backend)
+export const chatWithAgent = async ({ message, context = {} }) => {
+  const res = await fetch(`${API_BASE}/agent/chat`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({
+      message,
+      context,
+    }),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to chat with AI agent');
   }
 
   return json.data;

@@ -1,25 +1,18 @@
 import React from 'react';
 
 const ProgressBar = ({ progress }) => {
-    const containerStyle = {
-        width: '100%',
-        height: '0.75rem',
-        backgroundColor: '#e5e7eb',
-        borderRadius: '9999px',
-        overflow: 'hidden',
-    };
-
-    const fillStyle = {
-        height: '100%',
-        width: `${Math.min(100, Math.max(0, progress))}%`,
-        backgroundColor: 'var(--primary-blue)',
-        transition: 'width 0.5s ease-out',
-        borderRadius: '9999px',
-    };
+    const safeProgress = Math.min(100, Math.max(0, Number(progress) || 0));
 
     return (
-        <div style={containerStyle}>
-            <div style={fillStyle} />
+        <div style={{ width: '100%', height: '0.55rem', background: '#ededed', borderRadius: '999px', overflow: 'hidden' }}>
+            <div
+                style={{
+                    height: '100%',
+                    width: `${safeProgress}%`,
+                    background: '#000000',
+                    transition: 'width 0.25s ease',
+                }}
+            />
         </div>
     );
 };

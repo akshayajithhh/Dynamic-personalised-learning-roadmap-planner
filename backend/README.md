@@ -1,53 +1,84 @@
 # DPR Backend
 
-This is the backend for the Dynamic Personalized Roadmap Planner (DPR).
+Express + MongoDB API for the Dynamic Personalised Learning Roadmap Planner.
 
-## Tech Stack
-- Node.js
+## Stack
+- Node.js (ES modules)
 - Express
-- MongoDB
-- Mongoose
+- MongoDB + Mongoose
+- JWT auth
+- bcrypt password hashing
 
 ## Setup
-
 1. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. Create a `.env` file in the root of the `backend` folder with the following contents:
-   ```
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_secret_key
-   ```
+2. Create `backend/.env`:
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/dpr_db
+JWT_SECRET=replace_with_secure_secret
 
-3. Run the server:
-   ```bash
-   npm run dev
-   ```
+# AI provider config
+CODING_AGENT_API_KEY=your_provider_api_key
+# optional fallback supported by controller:
+# OPENAI_API_KEY=your_provider_api_key
+CODING_AGENT_API_URL=https://api.openai.com/v1/chat/completions
+CODING_AGENT_MODEL=gpt-4o-mini
+CODING_AGENT_TEMPERATURE=0.3
+```
 
-## API Endpoints
+3. Start server:
+```bash
+npm run dev
+```
+
+4. Seed the database (destructive reset of core collections):
+```bash
+npm run seed
+```
+
+## Scripts
+- `npm run dev` - run with nodemon
+- `npm start` - run with node
+- `npm run seed` - clear and repopulate domains/modules/skills/resources/users/roadmaps/progress
+
+## API routes
+Base: `http://localhost:5000/api`
 
 ### Auth
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
+- `POST /auth/register`
+- `POST /auth/login`
 
 ### Domains
-- `GET /api/domains` - Get all learning domains (for dashboard cards)
+- `GET /domains` (public)
+- `POST /domains` (protected + admin only)
 
 ### Roadmap
-- `POST /api/roadmap/generate` - Generate a personalized roadmap
-- `GET /api/roadmap/:userId` - Get user's roadmap
+- `POST /roadmap/generate`
+- `GET /roadmap/:userId?domain=<domainId-or-name>`
+- `GET /roadmap/skill/:skillId?userId=<userId>`
 
 ### Progress
-- `POST /api/progress/update` - Update skill progress
-- `GET /api/progress/:userId` - Get user's progress
+- `POST /progress/update`
+- `GET /progress/:userId`
 
-## Project Structure
-- `src/config` - Database configuration
-- `src/controllers` - Route controllers
-- `src/models` - Mongoose models
-- `src/routes` - API routes
-- `src/services` - core logic services (Roadmap Engine, Resource Selector)
+### Agent
+- `POST /agent/chat` (protected)
+
+## Project structure
+- `src/server.js` - bootstraps env, DB connection, and HTTP server
+- `src/app.js` - middleware and route mounting
+- `src/config/` - database connection
+- `src/routes/` - route definitions
+- `src/controllers/` - request handlers
+- `src/models/` - mongoose schemas
+- `src/services/` - roadmap generation and resource selection logic
+- `src/seeder.js` - full dataset generation/reset script
+
+## Notes
+- Only `/api/domains` `POST` and `/api/agent/chat` are currently JWT-protected by middleware.
+- Roadmap generation currently supports domain id or domain name inputs.
 

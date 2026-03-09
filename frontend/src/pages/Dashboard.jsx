@@ -9,14 +9,17 @@ const Dashboard = () => {
     const { user } = useUser();
     const [techs, setTechs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchTechs = async () => {
             try {
                 const data = await getTechnologies();
                 setTechs(data);
+                setError('');
             } catch (error) {
                 console.error('Failed to fetch technologies', error);
+                setError(error.message || 'Unable to load domains right now.');
             } finally {
                 setLoading(false);
             }
@@ -35,6 +38,22 @@ const Dashboard = () => {
 
                 {loading ? (
                     <Loader />
+                ) : error ? (
+                    <div className="card" style={{ maxWidth: '720px' }}>
+                        <h3 style={{ marginBottom: '0.5rem' }}>Unable to load data</h3>
+                        <p style={{ margin: 0 }}>
+                            {error}. Make sure backend and MongoDB are running, then seed data with `npm run seed` in
+                            `backend`.
+                        </p>
+                    </div>
+                ) : techs.length === 0 ? (
+                    <div className="card" style={{ maxWidth: '720px' }}>
+                        <h3 style={{ marginBottom: '0.5rem' }}>No domains found</h3>
+                        <p style={{ margin: 0 }}>
+                            Data is empty in the database. Run `npm run seed` inside `backend` to load domains,
+                            modules, and skills.
+                        </p>
+                    </div>
                 ) : (
                     <div style={{
                         display: 'grid',

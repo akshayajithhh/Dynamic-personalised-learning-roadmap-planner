@@ -1,108 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import ModuleCard from '../components/cards/ModuleCard';
+import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
-import { getRoadmap } from '../services/api';
+import { getRoadmap, getTechnologies, updateProgress } from '../services/api';
 
 const Roadmap = () => {
     const location = useLocation();
-    const techId = location.state?.techId;
+    const [domains, setDomains] = useState([]);
+    const [selectedDomain, setSelectedDomain] = useState(location.state?.techId || '');
     const [modules, setModules] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [updatingSkillId, setUpdatingSkillId] = useState('');
 
     useEffect(() => {
-        if (!techId) {
-            setLoading(false);
-            return;
-        }
+        const loadDomains = async () => {
+            try {
+                const data = await getTechnologies();
+                setDomains(data || []);
+                if (!selectedDomain && data?.length) {
+                    setSelectedDomain(data[0]._id || data[0].name);
+                }
+            } catch (error) {
+                console.error('Failed to load domains', error);
+            }
+        };
 
+        loadDomains();
+    }, [selectedDomain]);
+
+    useEffect(() => {
         const fetchRoadmap = async () => {
+            if (!selectedDomain) {
+                setModules([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             try {
-                const data = await getRoadmap(techId);
-                setModules(data);
+                const data = await getRoadmap(selectedDomain);
+                setModules(data || []);
             } catch (error) {
                 console.error('Failed to fetch roadmap', error);
+                setModules([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchRoadmap();
-    }, [techId]);
+    }, [selectedDomain, location.key]);
 
-    // Refresh roadmap when returning from module detail (location.key changes)
-    useEffect(() => {
-        if (techId && location.key) {
-            const fetchRoadmap = async () => {
-                try {
-                    const data = await getRoadmap(techId);
-                    setModules(data);
-                } catch (error) {
-                    console.error('Failed to refresh roadmap', error);
-                }
-            };
-            fetchRoadmap();
+    const completedCount = useMemo(
+        () => modules.filter((module) => module.status === 'completed').length,
+        [modules]
+    );
+
+    const handleMarkComplete = async (moduleId) => {
+        if (!selectedDomain) return;
+        setUpdatingSkillId(moduleId);
+        try {
+            await updateProgress({
+                skillId: moduleId,
+                status: 'completed',
+                domain: selectedDomain,
+            });
+
+            setModules((prev) =>
+                prev.map((module) => {
+                    if (module.id === moduleId) return { ...module, status: 'completed' };
+                    return module;
+                })
+            );
+        } catch (error) {
+            console.error('Failed to mark module complete', error);
+        } finally {
+            setUpdatingSkillId('');
         }
-    }, [location.key, techId]);
+    };
 
     return (
         <Layout>
             <div className="container">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                    <div>
-                        <h2 className="title" style={{ marginBottom: '0.5rem' }}>Your Roadmap</h2>
-                        {techId && (
-                            <p style={{ color: 'var(--text-light)' }}>Track: {techId.toUpperCase()}</p>
-                        )}
+                <div className="page-header">
+                    <h1 className="page-title">Generated Roadmap</h1>
+                    <p className="page-subtitle">
+                        Follow your module sequence, review suggested resources, and mark completed steps as you
+                        progress.
+                    </p>
+                </div>
+
+                <div className="card" style={{ marginBottom: '1.25rem' }}>
+                    <div style={{ display: 'grid', gap: '0.8rem' }}>
+                        <div>
+                            <label className="form-label" htmlFor="domain-select">Domain / Career Goal</label>
+                            <select
+                                id="domain-select"
+                                className="form-control"
+                                value={selectedDomain}
+                                onChange={(event) => setSelectedDomain(event.target.value)}
+                            >
+                                {domains.map((domain) => (
+                                    <option key={domain._id || domain.name} value={domain._id || domain.name}>
+                                        {domain.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <p className="subtle-text" style={{ margin: 0 }}>
+                            Completed modules: {completedCount} / {modules.length}
+                        </p>
                     </div>
-                    <Link to="/dashboard" style={{ color: 'var(--primary-blue)', fontWeight: '600' }}>Change Track</Link>
                 </div>
 
                 {loading ? (
                     <Loader />
-                ) : !techId ? (
-                    <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                        <h3>No track selected</h3>
-                        <p>Please choose a technology from the dashboard to generate a roadmap.</p>
+                ) : modules.length === 0 ? (
+                    <div className="card">
+                        <h3>No roadmap found</h3>
+                        <p>Generate a roadmap first to view your structured learning stages.</p>
+                        <div style={{ marginTop: '0.9rem' }}>
+                            <Button to="/generate-roadmap" variant="primary">Generate Roadmap</Button>
+                        </div>
                     </div>
                 ) : (
-                    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        {modules.length > 0 ? (
-                            modules.map((module, index) => (
-                                <div key={module.id} style={{ display: 'flex', gap: '1rem' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <div style={{
-                                            width: '2rem',
-                                            height: '2rem',
-                                            borderRadius: '50%',
-                                            backgroundColor: module.status === 'locked' ? '#e5e7eb' : 'var(--primary-blue)',
-                                            color: '#fff',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontWeight: 'bold',
-                                            zIndex: 1
-                                        }}>
-                                            {index + 1}
+                    <section className="roadmap-shell">
+                        {modules.map((module) => {
+                            const isLocked = module.status === 'locked';
+                            const isCompleted = module.status === 'completed';
+                            const buttonLabel = isCompleted ? 'Completed' : 'Mark as Completed';
+
+                            return (
+                                <article className="roadmap-item" key={module.id}>
+                                    <div className="card">
+                                        <h3>{module.title}</h3>
+                                        <p>{module.description || 'Core concepts and guided practice for this module.'}</p>
+                                        <div className="roadmap-meta">
+                                            <span>
+                                                Suggested resource: {module.resourceTitle || module.type || 'Structured learning material'}
+                                            </span>
+                                            <span>
+                                                Estimated completion time: {module.estimatedHours ? `${module.estimatedHours} hours` : '4 hours'}
+                                            </span>
+                                            <span className="status-chip">{module.status}</span>
                                         </div>
-                                        {index < modules.length - 1 && (
-                                            <div style={{ width: '2px', flex: 1, backgroundColor: '#e5e7eb', margin: '0.5rem 0' }} />
-                                        )}
+                                        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                                            <Button
+                                                variant={isCompleted ? 'outline' : 'primary'}
+                                                disabled={isLocked || isCompleted || updatingSkillId === module.id}
+                                                onClick={() => handleMarkComplete(module.id)}
+                                            >
+                                                {updatingSkillId === module.id ? 'Updating...' : buttonLabel}
+                                            </Button>
+                                            {module.resourceUrl && (
+                                                <Button to={module.resourceUrl} variant="outline" target="_blank" rel="noreferrer">
+                                                    Open Resource
+                                                </Button>
+                                            )}
+                                            <Link
+                                                to={`/roadmap/module/${module.id}`}
+                                                state={{ techId: selectedDomain }}
+                                                className="btn btn-ghost btn-md"
+                                            >
+                                                View Module Details
+                                            </Link>
+                                        </div>
                                     </div>
-                                    <div style={{ flex: 1, paddingBottom: '2rem' }}>
-                                        <ModuleCard module={module} techId={techId} />
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                                <h3>No modules found</h3>
-                                <p>It seems this track is empty or under construction.</p>
-                            </div>
-                        )}
-                    </div>
+                                </article>
+                            );
+                        })}
+                    </section>
                 )}
             </div>
         </Layout>

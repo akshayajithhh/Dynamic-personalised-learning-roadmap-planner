@@ -1,73 +1,86 @@
-# Dynamic Personalized Roadmap Planner (DPR)
+# DPR Frontend
 
-A React-based frontend application designed to help users generate custom learning roadmaps based on their skills and preferences.
+React client for the Dynamic Personalised Learning Roadmap Planner.
 
-## 🚀 Features
+## Stack
+- React 19
+- React Router DOM 7
+- Vite 7
+- Vanilla CSS (`src/styles/`)
 
-- **Personalized Roadmaps**: Adapts to skill level, time availability, and learning style.
-- **Progress Tracking**: Track completed modules and daily streaks.
-- **Interactive UI**: Clean, modern interface with a friendly learning atmosphere.
-- **Mock Backend**: Simulated API calls for a realistic experience without a server.
+## Features
+- User auth flows (register/login/logout) with persisted local session
+- Domain browsing and roadmap generation form
+- Roadmap view with module detail and resource cards
+- Progress page with completion insights
+- Light/dark theme toggle
+- Auth-gated right-side AI guide panel
+- Admin page for creating new domains
 
-## 🛠️ Technology Stack
-
-- **React 18**: Functional components & Hooks.
-- **React Router Dom 6**: Client-side routing.
-- **Vanilla CSS**: Custom design system with CSS Variables.
-- **Vite**: Fast build tool and dev server.
-
-## 📂 Project Structure
-
+## Run locally
+1. Install dependencies:
+```bash
+npm install
 ```
+
+2. Start dev server:
+```bash
+npm run dev
+```
+
+3. Build production bundle:
+```bash
+npm run build
+```
+
+4. Preview production build:
+```bash
+npm run preview
+```
+
+## Scripts
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
+
+## Routes
+- `/`
+- `/login`
+- `/register`
+- `/dashboard`
+- `/technology/:techId`
+- `/generate-roadmap`
+- `/learning-form/:techId`
+- `/my-roadmaps`
+- `/roadmap`
+- `/roadmap/module/:moduleId`
+- `/progress`
+- `/settings`
+- `/weekly-plan`
+- `/about`
+- `/admin/create-domain`
+
+## Project structure
+```text
 src/
-├── components/         # Reusable UI building blocks
-│   ├── cards/          # Display components (Tech, Module, Resource)
-│   ├── forms/          # User input forms (Login, Preferences)
-│   ├── layout/         # Structural components (Navbar, Footer)
-│   └── ui/             # Primitive components (Button, Loader)
-├── context/            # Global state (UserContext)
-├── pages/              # Application views mapped to routes
-├── services/           # Mock API simulation
-├── styles/             # Global CSS & Design Tokens
-├── App.jsx             # Main App component
-├── main.jsx            # Entry point
-└── router.jsx          # Route definitions
+  components/
+    agent/      # AI side panel
+    cards/      # Domain/module/resource cards
+    forms/      # Auth + learning preference forms
+    layout/     # Navbar/layout/footer
+    ui/         # Buttons, loader, progress bar
+  context/      # User auth/session context
+  pages/        # Route pages
+  services/     # API client wrappers
+  styles/       # global.css + variables.css
+  App.jsx
+  main.jsx
+  router.jsx
 ```
 
-## 🎨 Design System
-
-The UI uses a custom Design System defined in `src/styles/variables.css`:
-
-- **Colors**: Primary Blue (`#2563eb`), Surface White (`#ffffff`), Text Dark (`#111827`).
-- **Typography**: `Poppins` for headings, `Inter` for body text.
-- **Components**: Rounded corners (`0.5rem`), soft shadows, and clean whitespace.
-
-## 🏃‍♂️ Running the Project
-
-1.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-
-2.  **Start development server**:
-    ```bash
-    npm run dev
-    ```
-
-3.  **Build for production**:
-    ```bash
-    npm run build
-    ```
-
-## 🔌 Connecting a Backend
-
-Currently, the app uses `services/api.js` to simulate backend responses. To connect a real backend:
-
-1.  Replace the functions in `services/api.js` with real `fetch` or `axios` calls.
-2.  Ensure the backend returns data in the expected structure (match the mock data format).
-3.  Update error handling to manage real network errors.
-
-## 📝 Mock Data
-
-- **Login**: Any email/password will work (simulates success).
-- **Roadmap**: Generates a static mock roadmap for demonstration.
+## Backend integration
+- API base URL is hardcoded in `src/services/api.js`:
+  - `http://localhost:5000/api`
+- Start backend before using auth, roadmap, progress, and agent features.
+- Auth token is read from local storage key `dpr_user` and sent as `Bearer` token where available.
