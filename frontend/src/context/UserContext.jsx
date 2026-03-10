@@ -1,39 +1,34 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { useState } from 'react';
 import { login as apiLogin, register as apiRegister } from '../services/api';
+import { UserContext } from './userContextObject';
+const getStoredUser = () => {
+    const storedUserRaw = localStorage.getItem('dpr_user');
+    if (!storedUserRaw) return null;
 
-const UserContext = createContext();
+    try {
+        const parsed = JSON.parse(storedUserRaw);
+        if (
+            parsed &&
+            typeof parsed === 'object' &&
+            (parsed._id || parsed.id) &&
+            parsed.token &&
+            parsed.name
+        ) {
+            return parsed;
+        }
+    } catch {
+        // Ignore invalid JSON and clear the stale session below.
+    }
+
+    localStorage.removeItem('dpr_user');
+    return null;
+};
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(() => getStoredUser());
+    const [loading] = useState(false);
 
-    const isValidSessionUser = (candidate) => {
-        return Boolean(
-            candidate &&
-            typeof candidate === 'object' &&
-            (candidate._id || candidate.id) &&
-            candidate.token &&
-            candidate.name
-        );
-    };
-
-    useEffect(() => {
-        // Restore only a valid authenticated session from local storage.
-        const storedUserRaw = localStorage.getItem('dpr_user');
-        if (storedUserRaw) {
-            try {
-                const parsed = JSON.parse(storedUserRaw);
-                if (isValidSessionUser(parsed)) {
-                    setUser(parsed);
-                } else {
-                    localStorage.removeItem('dpr_user');
-                }
-            } catch (error) {
-                localStorage.removeItem('dpr_user');
-            }
-        }
-        setLoading(false);
-    }, []);
+    const isAdmin = user?.role === 'admin';
 
     const login = async (email, password) => {
         try {
@@ -66,10 +61,8 @@ export const UserProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, register, loading }}>
+        <UserContext.Provider value={{ user, login, logout, register, loading, isAdmin }}>
             {children}
         </UserContext.Provider>
     );
 };
-
-export const useUser = () => useContext(UserContext);

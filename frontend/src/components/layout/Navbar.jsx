@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../context/useUser';
 import Button from '../ui/Button';
 
 const Navbar = () => {
-    const { user, logout } = useUser();
+    const { user, logout, isAdmin } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
     const [menuOpen, setMenuOpen] = React.useState(false);
@@ -51,17 +51,21 @@ const Navbar = () => {
                         Home
                     </NavLink>
                     <NavLink to="/dashboard" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-                        Dashboard
+                        {isAdmin ? 'Overview' : 'Dashboard'}
                     </NavLink>
-                    <NavLink to="/generate-roadmap" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-                        Generate Roadmap
-                    </NavLink>
-                    <NavLink to="/my-roadmaps" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-                        My Roadmaps
-                    </NavLink>
-                    <NavLink to="/progress" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-                        Progress
-                    </NavLink>
+                    {!isAdmin && isLoggedIn && (
+                        <NavLink to="/my-roadmaps" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+                            My Roadmaps
+                        </NavLink>
+                    )}
+                    {isAdmin && (
+                        <NavLink
+                            to="/admin/create-domain"
+                            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                        >
+                            Admin Panel
+                        </NavLink>
+                    )}
 
                     <button
                         type="button"

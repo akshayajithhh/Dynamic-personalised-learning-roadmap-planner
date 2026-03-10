@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import Skill from '../models/Skill.js';
 import Resource from '../models/Resource.js';
 import { generateRoadmap } from '../services/roadmapEngine.js';
+import { resolveDomainContext } from '../utils/domainResolver.js';
 
 const buildStudyGuidance = ({ level, learningStyle, availableTimePerWeek }) => {
     const safeLevel = ['Beginner', 'Intermediate', 'Advanced'].includes(level) ? level : 'Beginner';
@@ -140,10 +141,12 @@ export const createRoadmap = async (req, res) => {
         user.availableTimePerWeek = effectiveAvailableTimePerWeek;
         await user.save();
 
+        const domainContext = await resolveDomainContext(domain);
+
         // Generate skills path
         const skillsPath = await generateRoadmap(
             user._id,
-            domain,
+            domainContext.raw,
             effectiveSkillLevel,
             effectiveLearningStyle
         );
@@ -159,7 +162,7 @@ export const createRoadmap = async (req, res) => {
         // Save roadmap
         const roadmap = await Roadmap.create({
             userId,
-            domain,
+            domain: domainContext.normalizedName,
             skills: skillsPath
         });
 
@@ -183,7 +186,8 @@ export const getRoadmap = async (req, res) => {
 
         let query = { userId };
         if (domain) {
-            query.domain = domain;
+            const domainContext = await resolveDomainContext(domain);
+            query.domain = domainContext.normalizedName;
         }
         console.log('[roadmapController] getRoadmap query:', query);
 
@@ -251,5 +255,40 @@ export const getSkillDetails = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const listUserRoadmaps = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const roadmaps = await Roadmap.find({ userId })
+            .sort({ createdAt: -1 })
+            .populate('skills.skillId')
+            .lean();
+
+        const latestByDomain = new Map();
+        for (const roadmap of roadmaps) {
+            if (!latestByDomain.has(roadmap.domain)) {
+                latestByDomain.set(roadmap.domain, roadmap);
+            }
+        }
+
+        const data = Array.from(latestByDomain.values()).map((roadmap) => {
+            const completedSkills = (roadmap.skills || []).filter((item) => item.status === 'completed').length;
+            return {
+                _id: roadmap._id,
+                domain: roadmap.domain,
+                createdAt: roadmap.createdAt,
+                updatedAt: roadmap.updatedAt,
+                totalSkills: roadmap.skills?.length || 0,
+                completedSkills,
+                skills: roadmap.skills || [],
+            };
+        });
+
+        return res.status(200).json({ success: true, data });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
     }
 };

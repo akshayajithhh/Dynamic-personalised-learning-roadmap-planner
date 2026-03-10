@@ -20,14 +20,6 @@ npm install
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/dpr_db
 JWT_SECRET=replace_with_secure_secret
-
-# AI provider config
-CODING_AGENT_API_KEY=your_provider_api_key
-# optional fallback supported by controller:
-# OPENAI_API_KEY=your_provider_api_key
-CODING_AGENT_API_URL=https://api.openai.com/v1/chat/completions
-CODING_AGENT_MODEL=gpt-4o-mini
-CODING_AGENT_TEMPERATURE=0.3
 ```
 
 3. Start server:
@@ -65,9 +57,6 @@ Base: `http://localhost:5000/api`
 - `POST /progress/update`
 - `GET /progress/:userId`
 
-### Agent
-- `POST /agent/chat` (protected)
-
 ## Project structure
 - `src/server.js` - bootstraps env, DB connection, and HTTP server
 - `src/app.js` - middleware and route mounting
@@ -79,6 +68,6 @@ Base: `http://localhost:5000/api`
 - `src/seeder.js` - full dataset generation/reset script
 
 ## Notes
-- Only `/api/domains` `POST` and `/api/agent/chat` are currently JWT-protected by middleware.
+- Only `/api/domains` `POST` is currently JWT-protected by middleware.
 - Roadmap generation currently supports domain id or domain name inputs.
 

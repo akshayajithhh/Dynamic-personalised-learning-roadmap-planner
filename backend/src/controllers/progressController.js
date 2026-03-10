@@ -1,5 +1,6 @@
 import Progress from '../models/Progress.js';
 import Roadmap from '../models/Roadmap.js';
+import { resolveDomainContext } from '../utils/domainResolver.js';
 
 // @desc    Update progress
 // @route   POST /api/progress/update
@@ -27,10 +28,10 @@ export const updateProgress = async (req, res) => {
 
         // Logic to unlock next skill in Roadmap if this one is completed
         if (status === 'completed') {
-            // Find roadmap filtered by userId AND domain (if provided)
-            let roadmapQuery = { userId };
+            let roadmapQuery = { userId, 'skills.skillId': skillId };
             if (domain) {
-                roadmapQuery.domain = domain;
+                const domainContext = await resolveDomainContext(domain);
+                roadmapQuery.domain = domainContext.normalizedName;
             }
             
             const roadmap = await Roadmap.findOne(roadmapQuery).sort({ createdAt: -1 });

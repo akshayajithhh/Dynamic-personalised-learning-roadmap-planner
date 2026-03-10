@@ -1,4 +1,9 @@
 import Domain from '../models/Domain.js';
+import Module from '../models/Module.js';
+import Skill from '../models/Skill.js';
+import Resource from '../models/Resource.js';
+import Roadmap from '../models/Roadmap.js';
+import Progress from '../models/Progress.js';
 
 // @desc    Get all domains
 // @route   GET /api/domains
@@ -21,9 +26,12 @@ export const getDomains = async (req, res) => {
 export const createDomain = async (req, res) => {
     try {
         const { name, description, icon, technologies } = req.body;
+        const normalizedName = typeof name === 'string' ? name.trim() : '';
+        const normalizedDescription = typeof description === 'string' ? description.trim() : '';
+        const normalizedIcon = typeof icon === 'string' ? icon.trim() : '';
 
         // Basic validation
-        if (!name || !description) {
+        if (!normalizedName || !normalizedDescription) {
             return res.status(400).json({
                 success: false,
                 message: 'Name and description are required'
@@ -31,7 +39,9 @@ export const createDomain = async (req, res) => {
         }
 
         // Prevent duplicate domains by name (case-insensitive)
-        const existing = await Domain.findOne({ name });
+        const existing = await Domain.findOne({
+            name: { $regex: new RegExp(`^${normalizedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+        });
         if (existing) {
             return res.status(400).json({
                 success: false,
@@ -50,9 +60,9 @@ export const createDomain = async (req, res) => {
         }
 
         const domain = await Domain.create({
-            name,
-            description,
-            icon,
+            name: normalizedName,
+            description: normalizedDescription,
+            icon: normalizedIcon || undefined,
             technologies: techArray
         });
 
@@ -62,5 +72,54 @@ export const createDomain = async (req, res) => {
         });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Delete a domain and all nested content
+// @route   DELETE /api/domains/:domainId
+// @access  Private/Admin
+export const deleteDomain = async (req, res) => {
+    try {
+        const { domainId } = req.params;
+
+        const domain = await Domain.findById(domainId);
+        if (!domain) {
+            return res.status(404).json({
+                success: false,
+                message: 'Domain not found',
+            });
+        }
+
+        const modules = await Module.find({ domainId }).select('_id');
+        const moduleIds = modules.map((item) => item._id);
+
+        const skills = await Skill.find({
+            $or: [
+                { moduleId: { $in: moduleIds } },
+                { domain: domain.name },
+            ],
+        }).select('_id');
+        const skillIds = skills.map((item) => item._id);
+
+        await Promise.all([
+            Resource.deleteMany({ skillId: { $in: skillIds } }),
+            Progress.deleteMany({ skillId: { $in: skillIds } }),
+            Skill.deleteMany({ _id: { $in: skillIds } }),
+            Module.deleteMany({ _id: { $in: moduleIds } }),
+            Roadmap.updateMany(
+                { domain: domain.name },
+                { $pull: { skills: { skillId: { $in: skillIds } } } }
+            ),
+            Roadmap.deleteMany({ domain: domain.name }),
+        ]);
+
+        await domain.deleteOne();
+
+        return res.status(200).json({
+            success: true,
+            data: { domainId, deleted: true },
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
     }
 };

@@ -1,17 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { getRoadmap, getTechnologies, updateProgress } from '../services/api';
+import { useUser } from '../context/useUser';
 
 const Roadmap = () => {
     const location = useLocation();
+    const { isAdmin } = useUser();
     const [domains, setDomains] = useState([]);
     const [selectedDomain, setSelectedDomain] = useState(location.state?.techId || '');
     const [modules, setModules] = useState([]);
     const [loading, setLoading] = useState(true);
     const [updatingSkillId, setUpdatingSkillId] = useState('');
+    const [actionError, setActionError] = useState('');
 
     useEffect(() => {
         const loadDomains = async () => {
@@ -60,6 +63,7 @@ const Roadmap = () => {
     const handleMarkComplete = async (moduleId) => {
         if (!selectedDomain) return;
         setUpdatingSkillId(moduleId);
+        setActionError('');
         try {
             await updateProgress({
                 skillId: moduleId,
@@ -75,10 +79,15 @@ const Roadmap = () => {
             );
         } catch (error) {
             console.error('Failed to mark module complete', error);
+            setActionError(error.message || 'Unable to update roadmap progress.');
         } finally {
             setUpdatingSkillId('');
         }
     };
+
+    if (isAdmin) {
+        return <Navigate to="/admin/create-domain" replace />;
+    }
 
     return (
         <Layout>
@@ -111,6 +120,7 @@ const Roadmap = () => {
                         <p className="subtle-text" style={{ margin: 0 }}>
                             Completed modules: {completedCount} / {modules.length}
                         </p>
+                        {actionError && <p className="admin-message error" style={{ margin: 0 }}>{actionError}</p>}
                     </div>
                 </div>
 

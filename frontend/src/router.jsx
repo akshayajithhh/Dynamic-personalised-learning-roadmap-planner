@@ -15,6 +15,7 @@ import Progress from './pages/Progress';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import AdminCreateDomain from './pages/AdminCreateDomain';
+import AdminDomains from './pages/AdminDomains';
 
 export const router = createBrowserRouter([
     {
@@ -76,5 +77,9 @@ export const router = createBrowserRouter([
     {
         path: '/admin/create-domain',
         element: <AdminCreateDomain />,
+    },
+    {
+        path: '/admin/domains',
+        element: <AdminDomains />,
     },
 ]);

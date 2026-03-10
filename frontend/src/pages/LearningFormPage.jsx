@@ -4,10 +4,12 @@ import Layout from '../components/layout/Layout';
 import LearningForm from '../components/forms/LearningForm';
 import Loader from '../components/ui/Loader';
 import { getTechnologies, submitLearningPreferences } from '../services/api';
+import { useUser } from '../context/useUser';
 
 const LearningFormPage = () => {
     const { techId } = useParams();
     const navigate = useNavigate();
+    const { isAdmin } = useUser();
     const [loading, setLoading] = useState(false);
     const [formError, setFormError] = useState('');
     const [techOptions, setTechOptions] = useState([]);
@@ -41,6 +43,10 @@ const LearningFormPage = () => {
             setLoading(false);
         }
     };
+
+    if (isAdmin) {
+        return <Navigate to="/admin/create-domain" replace />;
+    }
 
     return (
         <Layout>

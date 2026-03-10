@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Button from '../ui/Button';
 
 const LearningForm = ({ onSubmit, loading, techOptions = [], initialTechId = '' }) => {
@@ -8,17 +8,11 @@ const LearningForm = ({ onSubmit, loading, techOptions = [], initialTechId = '' 
     }, [initialTechId, techOptions]);
 
     const [preferences, setPreferences] = useState({
-        techId: defaultTechId,
+        techId: '',
         skillLevel: 'beginner',
         timeAvailable: '30min',
         learningType: 'video',
     });
-
-    useEffect(() => {
-        if (!preferences.techId && defaultTechId) {
-            setPreferences((prev) => ({ ...prev, techId: defaultTechId }));
-        }
-    }, [defaultTechId, preferences.techId]);
 
     const handleChange = (e) => {
         setPreferences({ ...preferences, [e.target.name]: e.target.value });
@@ -26,7 +20,10 @@ const LearningForm = ({ onSubmit, loading, techOptions = [], initialTechId = '' 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(preferences);
+        onSubmit({
+            ...preferences,
+            techId: preferences.techId || defaultTechId,
+        });
     };
 
     return (
@@ -36,7 +33,7 @@ const LearningForm = ({ onSubmit, loading, techOptions = [], initialTechId = '' 
                 <select
                     id="techId"
                     name="techId"
-                    value={preferences.techId}
+                    value={preferences.techId || defaultTechId}
                     onChange={handleChange}
                     className="form-control"
                     required

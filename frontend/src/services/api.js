@@ -120,6 +120,22 @@ export const getRoadmap = async (techId) => {
   }));
 };
 
+export const getUserRoadmaps = async () => {
+  const userId = getUserId();
+  if (!userId) return [];
+
+  const res = await fetch(`${API_BASE}/roadmap/user/${userId}/all`, {
+    headers: getHeaders(),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to fetch user roadmaps');
+  }
+
+  return json.data || [];
+};
+
 // 5️⃣ Get Resources for a Skill (Module Detail)
 export const getModuleResources = async (skillId) => {
   const userId = getUserId();
@@ -242,20 +258,73 @@ export const createDomain = async ({ name, description, icon, technologies }) =>
   return json.data;
 };
 
-// Agent: chat with coding assistant (API-key powered on backend)
-export const chatWithAgent = async ({ message, context = {} }) => {
-  const res = await fetch(`${API_BASE}/agent/chat`, {
-    method: 'POST',
+export const deleteDomain = async (domainId) => {
+  const res = await fetch(`${API_BASE}/domains/${domainId}`, {
+    method: 'DELETE',
     headers: getHeaders(),
-    body: JSON.stringify({
-      message,
-      context,
-    }),
   });
 
   const json = await res.json();
   if (!res.ok || !json.success) {
-    throw new Error(json.message || 'Failed to chat with AI agent');
+    throw new Error(json.message || 'Failed to delete domain');
+  }
+
+  return json.data;
+};
+
+export const getAdminOverview = async () => {
+  const res = await fetch(`${API_BASE}/admin/overview`, {
+    headers: getHeaders(),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to load admin overview');
+  }
+
+  return json.data;
+};
+
+export const createModule = async ({ domainId, name, description, order }) => {
+  const res = await fetch(`${API_BASE}/admin/modules`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ domainId, name, description, order }),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to create module');
+  }
+
+  return json.data;
+};
+
+export const createSkill = async ({ moduleId, name, description, level, estimatedHours }) => {
+  const res = await fetch(`${API_BASE}/admin/skills`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ moduleId, name, description, level, estimatedHours }),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to create skill');
+  }
+
+  return json.data;
+};
+
+export const createResource = async ({ skillId, title, type, url, difficulty, rating }) => {
+  const res = await fetch(`${API_BASE}/admin/resources`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ skillId, title, type, url, difficulty, rating }),
+  });
+
+  const json = await res.json();
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || 'Failed to create resource');
   }
 
   return json.data;

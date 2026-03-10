@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import ResourceCard from '../components/cards/ResourceCard';
 import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { getModuleResources, updateProgress } from '../services/api';
+import { useUser } from '../context/useUser';
 
 const ModuleDetail = () => {
     const { moduleId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAdmin } = useUser();
     const techId = location.state?.techId; // Get domainId from navigation state
     const [module, setModule] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -47,6 +49,7 @@ const ModuleDetail = () => {
         }
     };
 
+    if (isAdmin) return <Navigate to="/admin/create-domain" replace />;
     if (loading) return <Layout><Loader /></Layout>;
     if (!module) return <Layout><div className="container">Module not found</div></Layout>;
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import AuthForm from '../components/forms/AuthForm';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../context/useUser';
 
 const Register = () => {
     const { register } = useUser();

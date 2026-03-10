@@ -3,10 +3,11 @@ import Layout from '../components/layout/Layout';
 import TechCard from '../components/cards/TechCard';
 import Loader from '../components/ui/Loader';
 import { getTechnologies } from '../services/api';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../context/useUser';
+import Button from '../components/ui/Button';
 
 const Dashboard = () => {
-    const { user } = useUser();
+    const { isAdmin, user } = useUser();
     const [techs, setTechs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -28,6 +29,50 @@ const Dashboard = () => {
         fetchTechs();
     }, []);
 
+    if (isAdmin) {
+        return (
+            <Layout>
+                <div className="container">
+                    <div className="page-header">
+                        <h1 className="page-title">Admin Overview</h1>
+                        <p className="page-subtitle">
+                            Manage domains, modules, skills, and resources from one place. Admin accounts do not need
+                            learner roadmaps.
+                        </p>
+                    </div>
+
+                    <section className="info-grid">
+                        <article className="card">
+                            <h3>Domain Management</h3>
+                            <p>Create new domains and expand the catalog visible to learners.</p>
+                        </article>
+                        <article className="card">
+                            <h3>Curriculum Setup</h3>
+                            <p>Add modules and skills that define the structure of each domain roadmap.</p>
+                        </article>
+                        <article className="card">
+                            <h3>Resource Curation</h3>
+                            <p>Attach learning resources so every skill has useful study material.</p>
+                        </article>
+                    </section>
+
+                    <div className="card" style={{ marginTop: '1.5rem' }}>
+                        <h3 style={{ marginBottom: '0.6rem' }}>Admin actions</h3>
+                        <p style={{ margin: 0, color: 'var(--text-light)' }}>
+                            Signed in as {user?.name}. Open the admin panel to add domains, modules, skills, and
+                            resources.
+                        </p>
+                        <div style={{ marginTop: '1rem' }}>
+                            <Button to="/admin/create-domain" variant="primary">
+                                Open Admin Panel
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
+
     return (
         <Layout>
             <div className="container">
@@ -35,7 +80,6 @@ const Dashboard = () => {
                 <p style={{ marginBottom: '2rem', fontSize: '1.1rem', color: 'var(--text-light)' }}>
                     Select a path to begin your personalized learning journey.
                 </p>
-
                 {loading ? (
                     <Loader />
                 ) : error ? (

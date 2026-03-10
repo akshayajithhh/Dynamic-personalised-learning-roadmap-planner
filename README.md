@@ -1,6 +1,6 @@
 # Dynamic Personalised Learning Roadmap Planner
 
-Full-stack app for generating personalised learning roadmaps, tracking skill progress, and getting help from an authenticated AI coding assistant.
+Full-stack app for generating personalised learning roadmaps, tracking skill progress, and managing learning domains through an admin panel.
 
 ## What it does
 - Lets users register/login and store sessions in local storage (`dpr_user`)
@@ -8,7 +8,6 @@ Full-stack app for generating personalised learning roadmaps, tracking skill pro
 - Generates roadmap steps by domain + learner preferences
 - Unlocks skills progressively as users mark steps complete
 - Shows module-level resources and study tips
-- Provides an authenticated right-side AI assistant panel
 - Supports admin-only domain creation
 
 ## Tech stack
@@ -16,7 +15,6 @@ Full-stack app for generating personalised learning roadmaps, tracking skill pro
 - Backend: Node.js + Express + Mongoose
 - Database: MongoDB
 - Auth: JWT bearer tokens
-- AI provider integration: OpenAI-compatible `chat/completions` endpoint via backend proxy
 
 ## Repo structure
 - `frontend/` React client
@@ -40,13 +38,6 @@ PORT=5000
 MONGO_URI=mongodb://localhost:27017/dpr_db
 JWT_SECRET=replace_with_secure_secret
 
-# AI agent provider settings
-CODING_AGENT_API_KEY=your_api_key
-# Optional fallback supported by code:
-# OPENAI_API_KEY=your_api_key
-CODING_AGENT_API_URL=https://api.openai.com/v1/chat/completions
-CODING_AGENT_MODEL=gpt-4o-mini
-CODING_AGENT_TEMPERATURE=0.3
 ```
 
 Run backend:
@@ -100,9 +91,6 @@ Base URL: `http://localhost:5000/api`
 - `POST /progress/update`
 - `GET /progress/:userId`
 
-### Agent
-- `POST /agent/chat` (requires `Bearer` token)
-
 ## Frontend routes
 - `/`
 - `/login`, `/register`
@@ -120,4 +108,3 @@ Base URL: `http://localhost:5000/api`
 
 ## Notes
 - Frontend API base is currently hardcoded in `frontend/src/services/api.js` as `http://localhost:5000/api`.
-- AI keys stay server-side only. Do not expose them in frontend code.
